@@ -1,0 +1,25 @@
+{
+    "dataset": {
+        "folder1": "dataset/images.zip",
+        "folder2": "dataset/distorted.zip",
+        "target_size": [128, 128],
+        "augmentation_factor": 80,
+        "batch_size": 72
+    },
+    "model": {
+        "epochs": 100,
+        "learning_rate": 0.0002699,
+        "latent_dim": 128,
+        "hidden_dim": 300,
+        "output_dim": 32,
+        "enkernel_size": 3,
+        "enstride": 2,
+        "enpadding": 1
+    },
+    "training": {
+        "weight_decay": 0.0001224,
+        "patience": 8,
+        "factor": 0.04325
+    }
+}
+
