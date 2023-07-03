@@ -11,6 +11,9 @@ import torch.nn as nn
 from model.model import VAE, apply_noise
 from dataset.dataset import CustomDataset
 
+import logging
+logging.basicConfig(level=logging.INFO)
+
 # Create an instance of the argument parser
 parser = argparse.ArgumentParser(description='Recover Stretched Images API')
 parser.add_argument('config_file', type=str, help='Add the config.json')
@@ -23,8 +26,8 @@ with open(args.config_file, 'r') as f:
     config = json.load(f)
 
 # Set the necessary parameters
-folder_1 = config['dataset']['folder1']
-folder_2 = config['dataset']['folder2']
+images_folder = config['dataset']['images_folder']
+distorted_folder = config['dataset']['distorted_folder']
 target_size = config['dataset']['target_size']
 augmentation_factor = config['dataset']['augmentation_factor']
 batch_size = config['dataset']['batch_size']
@@ -42,7 +45,10 @@ weight_decay = config['training']['weight_decay']
 patience = config['training']['patience']
 factor = config['training']['factor']
 
-dataset = CustomDataset(folder_1, folder_2, target_size, batch_size)
+model_save_path = config['paths']['model_save_path']
+log_file_path = config['paths']['log_file_path']
+
+dataset = CustomDataset(images_folder, distorted_folder, target_size, batch_size)
 
 num_lists = 16
 train_dataset = dataset.augment_truth_images(augmentation_factor, num_lists)
@@ -66,7 +72,7 @@ optimizer = torch.optim.AdamW(vae.parameters(), lr=learning_rate, weight_decay=w
 scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=patience, factor=factor)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-print(device)
+logging.info(f"Using device: {device}")
 
 train_losses = []
 val_losses = []
@@ -124,10 +130,13 @@ for epoch in range(epochs):
     test_losses.append(average_test_loss)
 
     if epoch % 10 == 0:
-        model_save = "results/vae_models/vae_model_" + str(epoch) + ".pth"
-        model_pkl = "results/vae_models/vae_model_" + str(epoch) + ".pkl"
-        print(f"Epoch [{epoch + 1}/{epochs}], Train Loss: {average_loss:.4f}, Test Loss: {average_test_loss:.4f}")
+        model_save = os.path.join(model_save_path, f"vae_model_{epoch}.pth")
+        model_pkl = os.path.join(model_save_path, f"vae_model_{epoch}.pkl")
+        logging.info(f"Epoch [{epoch + 1}/{epochs}], Train Loss: {average_loss:.4f}, Test Loss: {average_test_loss:.4f}")
         torch.save(vae.state_dict(), model_save)
         torch.save(vae, model_pkl)
 
+    logging.info("Plotting Reconstructed Images.")
     plot_reconstructed_images(vae, test_data_loader, criterion, device, epoch)
+
+logging.info("Training completed.")

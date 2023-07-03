@@ -25,14 +25,14 @@ class CustomDatasetTestCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         # Set up test data and parameters
-        cls.folder1 = "../dataset/images.zip"
-        cls.folder2 = "../dataset/distorted.zip"
+        cls.images_folder = "../dataset/images.zip"
+        cls.distorted_folder = "../dataset/distorted.zip"
         cls.target_size = (128, 128)
         cls.batch_size = 16
 
         # Read the files from the zip folders
-        cls.files1 = cls.get_image_files_from_zip(cls.folder1)
-        cls.files2 = cls.get_image_files_from_zip(cls.folder2)
+        cls.files1 = cls.get_image_files_from_zip(cls.images_folder)
+        cls.files2 = cls.get_image_files_from_zip(cls.distorted_folder)
 
     @classmethod
     def get_image_files_from_zip(cls, zip_file_path):
@@ -45,7 +45,7 @@ class CustomDatasetTestCase(unittest.TestCase):
 
     def setUp(self):
         # Initialize the dataset
-        self.dataset = CustomDataset(self.folder1, self.folder2, self.target_size, self.batch_size)
+        self.dataset = CustomDataset(self.images_folder, self.distorted_folder, self.target_size, self.batch_size)
 
     def test_dataset_loading(self):
 
