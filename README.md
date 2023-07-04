@@ -19,6 +19,7 @@ Run the following command to execute the VAE for image recovery:
     python3 main.py config_file.json
 
 Results
+
 We have deployed an API that provides some results from the trained VAE model. You can access the API and explore the recovered images at the following link: https://webapp-33aygxoera-uc.a.run.app
 
 
